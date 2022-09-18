@@ -18,6 +18,7 @@ const mutations = {
 }
 const actions = {
   async login(context, data) {
+    // 调用了api 的接口
     const result = await login(data)
     context.commit('setToken', result)
     // if (result.data.success) {

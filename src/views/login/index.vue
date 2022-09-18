@@ -57,7 +57,7 @@
 
 <script>
 import { validMbile } from '@/utils/validate'
-
+import { mapActions } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -100,6 +100,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -111,18 +112,20 @@ export default {
       })
     },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+      this.$refs.loginForm.validate(async(isOK) => {
+        if (isOK) {
+          try {
+            this.loading = true
+            // 只有校验成功了，才会调用action
+            await this['login'](this.loginForm)
+            // 应该登录之后
+            // await后面之后的代码，都是执行后的代码
+            this.$router.push('/')
+          } catch (error) {
+            console.log(error)
+          } finally {
             this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
+          }
         }
       })
     }
