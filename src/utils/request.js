@@ -2,7 +2,7 @@ import store from '@/store'
 import router from '@/router'
 import axios from 'axios'
 import { Message } from 'element-ui'
-import { setTimeStamp, getTimeStamp } from '@/utils/auth'
+import { getTimeStamp } from '@/utils/auth'
 const TimeOut = 7200 // 定时超时时间
 const service = axios.create(
   {
@@ -41,7 +41,7 @@ service.interceptors.response.use(response => {
     return Promise.reject(new Error('message'))
   }
 }, error => {
-  if (error && error.response.data.code === 10002) {
+  if (error.response && error.response.data && error.response.data.code === 10002) {
     // 当出现此状态码，则说明超时了
     store.dispatch('logout') // 调用退出登录
     router.push('/login') // 回到登录页

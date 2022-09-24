@@ -115,3 +115,20 @@ export function param2Obj(url) {
   })
   return obj
 }
+//  将列表的数据转换成树形图 =>递归算法
+// 遍历有一个重点，要找到根节点
+export function tranListToTreeData(list, rootvalue) {
+  const arr = []
+  list.forEach(item => {
+    if (item.pid === rootvalue) {
+      // 找到之后，要找item下面有没有子节点
+      const children = tranListToTreeData(list, item.id)
+      // 如果长度大于0 说明找到了子节点
+      if (children.length) {
+        item.children = children
+      }
+      arr.push(item) // 间隔你添加到数组中
+    }
+  })
+  return arr
+}
