@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 
 import '@/styles/index.scss' // global css
-
+import * as filters from '@/filters/index'
 import App from './App'
 import store from './store'
 import router from './router'
@@ -23,6 +23,10 @@ Vue.use(ElementUI, { locale })
 Object.keys(directive).forEach(key => {
   // 注册自定义指令
   Vue.directive(key, directive[key])
+})
+// 注册全局过滤器
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key]) // 注册自定义过滤器
 })
 Vue.config.productionTip = false
 
