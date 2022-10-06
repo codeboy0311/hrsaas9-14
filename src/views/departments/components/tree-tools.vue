@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { delDepartments, addDepartments } from '@/api/departments'
+import { delDepartments } from '@/api/departments'
 export default {
   props: {
     // 定义传入属性

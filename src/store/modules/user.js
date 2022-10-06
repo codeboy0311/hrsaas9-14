@@ -1,4 +1,4 @@
-import { getToken, removeToken, setToken, setTimeStamp, getTimeStamp } from '@/utils/auth'
+import { getToken, removeToken, setToken, setTimeStamp } from '@/utils/auth'
 import { login, getUserInfo, getUserDetailById } from '@/api/user'
 
 const state = {

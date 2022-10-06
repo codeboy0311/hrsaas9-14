@@ -28,3 +28,13 @@ export function addEmplotee(data) {
     data
   })
 }
+
+// 批量导入员工接口
+export function importEmplotee(data) {
+  return request({
+    method: 'post',
+    url: '/sys/user/batch',
+    data
+  })
+}
+

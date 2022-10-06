@@ -5,6 +5,7 @@
       <span slot="before">我爱你们</span>
       <el-button slot="after" type="primary">导入EXCEL</el-button>
     </pageTools>
+    <UploadExcel />
   </div>
 </template>
 
@@ -13,12 +14,12 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'Dashboard',
-
   computed: {
     ...mapGetters([
       'name'
     ])
   }
+
 }
 </script>
 

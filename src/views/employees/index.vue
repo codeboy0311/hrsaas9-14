@@ -4,8 +4,8 @@
       <pageTools :show-before="true">
         <span slot="before">共{{ page.total }}条记录</span>
         <template slot="after">
-          <el-button size="small" type="warning">导入</el-button>
-          <el-button size="small" type="danger">导出</el-button>
+          <el-button size="small" type="warning" @click="$router.push('/import')">导入</el-button>
+          <el-button size="small" type="danger" @click="exportData">导出</el-button>
           <el-button size="small" type="primary" @click="showDialog=true">新增员工</el-button>
         </template>
       </pageTools>
@@ -58,6 +58,7 @@
 import { getEmployeeList, delEmployee } from '@/api/employs'
 import EmployeeEnum from '@/api/constant/employees' // 引入员工的枚举对象
 import addEmployee from './components/add-employee.vue'
+import { formatDate } from '@/filters/index'
 export default {
   components: {
     addEmployee
@@ -103,6 +104,54 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+    exportData() {
+      const headers = {
+        '手机号': 'mobile',
+        '姓名': 'username',
+        '入职日期': 'timeOfEntry',
+        '聘用形式': 'formOfEmployment',
+        '转正日期': 'correctionTime',
+        '工号': 'workNumber',
+        '部门': 'departmentName'
+      }
+      import('@/vendor/Export2Excel').then(async excel => {
+        // excel是引入文件的导出对象
+        // 导出 header从哪里来
+        // data从哪里来
+        // 现在没有一个接口获取所有数据
+        // 获取员工的接口页码，每页条数 100 1 10000
+        const { rows } = await getEmployeeList({ page: 1, size: this.page.total })
+        const data = this.formatJson(headers, rows) // 返回的data就是要导出的结构
+        const multiHeader = [['姓名', '主要信息', '', '', '', '', '部门']]
+        const merges = ['A1:A2', 'B1:F1', 'G1:G2']
+        excel.export_json_to_excel({
+
+          header: Object.keys(headers), // 表头
+          data, // 具体参数必填
+          filename: '员工表单', // 非必填
+          autoWidth: true, // 非必填
+          bookType: 'xlsx',
+          multiHeader,
+          merges
+        })
+      })
+    },
+    // 将表头和数据进行对应
+    // 原来是[{}] 变成[[]]
+    formatJson(headers, rows) {
+      return rows.map(item => {
+        return Object.keys(headers).map(key => {
+          // 需要判断字段
+          if (headers[key] === 'timeOfEntry' || headers[key] === 'correctionTime') {
+            return formatDate(item[headers[key]])
+          } else if (headers[key] === 'formOfEmployment') {
+            const obj = EmployeeEnum.hireType.find(obj => obj.id === item[headers[key]])
+            return obj ? obj.value : '未知'
+          }
+          return item[headers[key]]
+        })
+      })
     }
   }
 

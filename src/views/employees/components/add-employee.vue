@@ -1,6 +1,6 @@
 <template>
-  <el-dialog title="新增员工" :visible="showDialog">
-    <el-form label-width="120px" :model="formData" :rules="rules">
+  <el-dialog title="新增员工" :visible="showDialog" @close="btnCancel">
+    <el-form ref="addEmployee" label-width="120px" :model="formData" :rules="rules">
       <el-form-item label="姓名" prop="username">
         <el-input v-model="formData.username" style="width:50%" placeholder="请输入姓名" />
       </el-form-item>
@@ -12,9 +12,7 @@
       </el-form-item>
       <el-form-item label="聘用形式" prop="formOfEmployment">
         <el-select v-model="formData.formOfEmployment" style="width:50%" placeholder="请选择聘用形式">
-          <el-option v-for="item in employees.hireType" :key="item.id">
-            {{ item.value }}
-          </el-option>
+          <el-option v-for="item in employees.hireType" :key="item.id" :value="item.value" />
         </el-select>
       </el-form-item>
       <el-form-item label="工号" prop="workNumber">
@@ -31,8 +29,8 @@
     </el-form>
     <el-row slot="footer" type="flex" justify="center" align="center">
       <el-col :span="6">
-        <el-button size="samll">取消</el-button>
-        <el-button size="samll" type="primary">添加</el-button>
+        <el-button size="samll" @click="btnCancel">取消</el-button>
+        <el-button size="samll" type="primary" @click="btnOk">添加</el-button>
       </el-col>
     </el-row>
   </el-dialog>
@@ -87,6 +85,37 @@ export default {
     nodeClik(node) {
       this.formData.departmentName = node.name
       this.showTree = false
+    },
+    async btnOk() {
+      try {
+        await this.$refs.addEmployee.validate() // 验证表单是否通过
+        await addEmplotee(this.formData) // 新增员工
+        // 调用父组件的实例，告诉父组件更新数据
+        // this.$parent 可以直接访问父组件的实例，实际上就是父组件的this
+        // this.$emit()
+        this.$parent.getEmployeeList()
+        this.$parent.showDialog = false
+        // 这里不用重置数据，因为关闭弹层触发了close事件。close事件绑定了btncancel事件
+      } catch (error) {
+        this.message.fails('添加失败')
+      }
+    },
+    btnCancel() {
+      // 重置表单
+      this.formData = {
+        username: '',
+        mobile: '',
+        formOfEmployment: '',
+        workNumber: '',
+        departmentName: '',
+        timeOfEntry: '',
+        correctionTime: ''
+      }
+      // 重置表单验证
+      this.$refs.addEmployee.resetFields()
+      // 调用父组件关闭单层
+      this.$emit('update:showDialog', false)
+      // update:props名称 这么写的话 可以在父组件直接使用sync修饰符处理
     }
   }
 }
