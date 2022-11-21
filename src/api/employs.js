@@ -38,3 +38,12 @@ export function importEmplotee(data) {
   })
 }
 
+// 导入员工数据 参数data是一个数组类型
+export function saveUserDetailById(data) {
+  return request({
+    method: 'put',
+    url: `/sys/user/${data.id}`,
+    data
+  })
+}
+

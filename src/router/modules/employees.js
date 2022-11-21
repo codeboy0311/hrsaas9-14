@@ -13,5 +13,14 @@ export default {
       title: '员工管理',
       icon: 'people'// 这里为什么要用title，因为左侧导航读取了这里的title属性
     }
-  }]
+  },
+  {
+    path: 'detail/:id', // query传参 动态路由传参，加个？有也行，没有也行
+    component: () => import('@/views/employees/detail'),
+    hidden: true, // 不在左侧菜单显示
+    meta: {
+      title: '员工详情'
+    }
+  }
+  ]
 }
